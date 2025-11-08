@@ -51,7 +51,7 @@ pipeline {
                 sh '''
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
-                    echo "Deploy to Prod. Site ID = $NETLIFY_SITE_ID
+                    echo "Deploy to Prod. Site ID = $NETLIFY_SITE_ID"
                 '''
             }
         }
