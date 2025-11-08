@@ -54,7 +54,7 @@ pipeline {
                     node_modules/.bin/netlify --version
                     echo "Deploy to Prod. Site ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy --dir=. --prod
+                    node_modules/.bin/netlify deploy --prod
                 '''
             }
         }
