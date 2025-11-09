@@ -50,11 +50,12 @@ pipeline {
             }
             steps {
                 sh '''
+                    apk add --no-cache bash
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
                     echo "Deploy to Prod. Site ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
-                    node_modules/.bin/netlify deploy -p
+                    node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
         }
