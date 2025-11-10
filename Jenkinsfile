@@ -1,13 +1,12 @@
 pipeline {
     agent any
 
-    environment {
+    environment{
         NETLIFY_SITE_ID = '23fdd1a1-bc18-4989-9a12-fd4064a74f15'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
     }
 
     stages {
-
         stage('Build') {
             agent {
                 docker {
@@ -27,35 +26,18 @@ pipeline {
             }
         }
 
-        stage('Tests') {
-            parallel {
-                stage('Unit tests') {
-                    agent {
-                        docker {
-                            image 'node:18-alpine'
-                            reuseNode true
-                        }
-                    }
-
-                    steps {
-                        sh '''
-                            #test -f build/index.html
-                            npm test
-                        '''
-                    }
-                    post {
-                        always {
-                            junit 'jest-results/junit.xml'
-                        }
-                    }
+        stage('Test') {
+            agent {
+                docker {
+                    image 'node:18-alpine'
+                    reuseNode true
                 }
-
-                    post {
-                        always {
-                            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright HTML Report', reportTitles: '', useWrapperFileDirectly: true])
-                        }
-                    }
-                }
+            }
+            steps {
+                sh '''
+                    test -f build/index.html
+                    npm test
+                '''
             }
         }
 
@@ -68,13 +50,15 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1
+                    apk add --no-cache bash
+                    npm install netlify-cli
                     node_modules/.bin/netlify --version
-                    echo "Deploying to production. Site ID: $NETLIFY_SITE_ID"
+                    echo "Deploy to Prod. Site ID = $NETLIFY_SITE_ID"
                     node_modules/.bin/netlify status
                     node_modules/.bin/netlify deploy --dir=build --prod
                 '''
             }
         }
     }
+
 }
