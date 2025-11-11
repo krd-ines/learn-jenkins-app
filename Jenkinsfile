@@ -10,7 +10,7 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'node:18'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
@@ -29,7 +29,7 @@ pipeline {
         stage('Test') {
             agent {
                 docker {
-                    image 'node:18'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
@@ -44,11 +44,17 @@ pipeline {
         stage('Deploy') {
             agent {
                 docker {
-                    image 'node:18'
+                    image 'node:18-alpine'
                     reuseNode true
                 }
             }
             steps {
+                writeFile file: 'netlify.toml', text: '''
+                [build]
+                    command = ""
+                    publish = "build"
+                '''
+                
                 sh '''
                     npm install netlify-cli
                     node_modules/.bin/netlify --version
